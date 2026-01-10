@@ -112,7 +112,7 @@ class FilmorateApplicationTests {
         assertEquals("name", createdFilm.getName());
         assertEquals("Description", createdFilm.getDescription());
         assertEquals(LocalDate.of(2000, 1, 1), createdFilm.getReleaseDate());
-        assertEquals(120L , createdFilm.getDuration());
+        assertEquals(120L, createdFilm.getDuration());
         assertEquals(1, filmController.findAll().size());
     }
 
