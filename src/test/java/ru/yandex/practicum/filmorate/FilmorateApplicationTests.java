@@ -8,7 +8,6 @@ import ru.yandex.practicum.filmorate.controller.UserController;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.time.Duration;
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -105,7 +104,7 @@ class FilmorateApplicationTests {
         film.setName("name");
         film.setDescription("Description");
         film.setReleaseDate(LocalDate.of(2000, 1, 1));
-        film.setDuration(Duration.ofMinutes(120));
+        film.setDuration(120L);
 
         Film createdFilm = filmController.create(film);
 
@@ -113,7 +112,7 @@ class FilmorateApplicationTests {
         assertEquals("name", createdFilm.getName());
         assertEquals("Description", createdFilm.getDescription());
         assertEquals(LocalDate.of(2000, 1, 1), createdFilm.getReleaseDate());
-        assertEquals(Duration.ofMinutes(120), createdFilm.getDuration());
+        assertEquals(120L , createdFilm.getDuration());
         assertEquals(1, filmController.findAll().size());
     }
 
@@ -123,7 +122,7 @@ class FilmorateApplicationTests {
         film.setName("name");
         film.setDescription("a".repeat(200));
         film.setReleaseDate(LocalDate.of(2000, 1, 1));
-        film.setDuration(Duration.ofMinutes(120));
+        film.setDuration(120L);
 
         Film createdFilm = filmController.create(film);
 
@@ -136,7 +135,7 @@ class FilmorateApplicationTests {
         film.setName("name");
         film.setDescription("Description");
         film.setReleaseDate(LocalDate.of(1000, 1, 1));
-        film.setDuration(Duration.ofMinutes(120));
+        film.setDuration(120L);
 
         assertThrows(ValidationException.class, () -> filmController.create(film));
     }
@@ -147,7 +146,7 @@ class FilmorateApplicationTests {
         film.setName("name");
         film.setDescription("Description");
         film.setReleaseDate(LocalDate.of(1895, 12, 28));
-        film.setDuration(Duration.ofMinutes(120));
+        film.setDuration(120L);
 
         Film createdFilm = filmController.create(film);
 
@@ -160,14 +159,14 @@ class FilmorateApplicationTests {
         film.setName("name");
         film.setDescription("Description");
         film.setReleaseDate(LocalDate.of(2000, 1, 1));
-        film.setDuration(Duration.ofMinutes(120));
+        film.setDuration(120L);
 
         Film createdFilm = filmController.create(film);
 
         assertEquals("name", createdFilm.getName());
         assertEquals("Description", createdFilm.getDescription());
         assertEquals(LocalDate.of(2000, 1, 1), createdFilm.getReleaseDate());
-        assertEquals(Duration.ofMinutes(120), createdFilm.getDuration());
+        assertEquals(120L, createdFilm.getDuration());
         assertEquals(1, filmController.findAll().size());
 
         Film toUpdate = new Film();
@@ -175,14 +174,14 @@ class FilmorateApplicationTests {
         toUpdate.setName("newname");
         toUpdate.setDescription("newDescription");
         toUpdate.setReleaseDate(LocalDate.of(2001, 1, 1));
-        toUpdate.setDuration(Duration.ofMinutes(150));
+        toUpdate.setDuration(150L);
 
         Film updatedFilm = filmController.update(toUpdate);
 
         assertEquals("newname", updatedFilm.getName());
         assertEquals("newDescription", updatedFilm.getDescription());
         assertEquals(LocalDate.of(2001, 1, 1), updatedFilm.getReleaseDate());
-        assertEquals(Duration.ofMinutes(150), updatedFilm.getDuration());
+        assertEquals(150L, updatedFilm.getDuration());
         assertEquals(1, filmController.findAll().size());
     }
 }

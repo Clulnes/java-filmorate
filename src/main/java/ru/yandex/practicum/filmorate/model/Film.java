@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.model;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
-import java.time.Duration;
 import java.time.LocalDate;
 
 /**
@@ -22,5 +21,5 @@ public class Film {
     LocalDate releaseDate;
 
     @Positive(message = "Продолжительность фильма должна быть положительной")
-    Duration duration;
+    Long duration;
 }
