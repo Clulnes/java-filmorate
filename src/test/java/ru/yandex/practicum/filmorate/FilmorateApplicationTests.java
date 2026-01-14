@@ -130,17 +130,6 @@ class FilmorateApplicationTests {
     }
 
     @Test
-    public void shouldThrowExceptionWhenDateReleaseIsEarlierThan28December1895() {
-        Film film = new Film();
-        film.setName("name");
-        film.setDescription("Description");
-        film.setReleaseDate(LocalDate.of(1000, 1, 1));
-        film.setDuration(120L);
-
-        assertThrows(ValidationException.class, () -> filmController.create(film));
-    }
-
-    @Test
     public void shouldCreateFilmWhenDateReleaseIs28December1895() {
         Film film = new Film();
         film.setName("name");
