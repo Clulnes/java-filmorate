@@ -26,29 +26,11 @@ public class FilmController {
     public Film create(@Valid @RequestBody Film film) {
         log.info("Запрос на добавление фильма с названием: {}", film.getName());
 
-        validate(film);
-
         film.setId(getNextId());
         films.put(film.getId(), film);
 
         log.info("Фильм добавлен, его ID: {}", film.getId());
         return film;
-    }
-
-    private long getNextId() {
-        long currentMaxId = films.keySet()
-                .stream()
-                .mapToLong(id -> id)
-                .max()
-                .orElse(0);
-        return ++currentMaxId;
-    }
-
-    private void validate(Film film) {
-        if (film.getReleaseDate().isBefore(LocalDate.of(1895, 12, 28))) {
-            log.warn("Ошибка валидации: выбранная дата слишком старая");
-            throw new ValidationException("Дата релиза не может быть раньше 28 декабря 1895 года");
-        }
     }
 
     @PutMapping
@@ -59,8 +41,6 @@ public class FilmController {
             log.warn("Ошибка компиляции, не указан ID");
             throw new ValidationException("Id должен быть указан");
         }
-
-        validate(newFilm);
 
         if (films.containsKey(newFilm.getId())) {
             Film oldFilm = films.get(newFilm.getId());
@@ -76,5 +56,14 @@ public class FilmController {
 
         log.warn("Ошибка обновления, в базе нет фильма с ID: {}", newFilm.getId());
         throw new ValidationException("Фильм с id = " + newFilm.getId() + " не найден");
+    }
+
+    private long getNextId() {
+        long currentMaxId = films.keySet()
+                .stream()
+                .mapToLong(id -> id)
+                .max()
+                .orElse(0);
+        return ++currentMaxId;
     }
 }

@@ -37,15 +37,6 @@ public class UserController {
         return user;
     }
 
-    private long getNextId() {
-        long currentMaxId = users.keySet()
-                .stream()
-                .mapToLong(id -> id)
-                .max()
-                .orElse(0);
-        return ++currentMaxId;
-    }
-
     @PutMapping
     public User update(@Valid @RequestBody User newUser) {
         log.info("Получен запрос на обновление пользователя с ID: {}", newUser.getId());
@@ -72,5 +63,14 @@ public class UserController {
 
         log.warn("Ошибка обновления: пользователь с ID: {} не найден", newUser.getId());
         throw new ValidationException("Пользователь с id = " + newUser.getId() + " не найден");
+    }
+
+    private long getNextId() {
+        long currentMaxId = users.keySet()
+                .stream()
+                .mapToLong(id -> id)
+                .max()
+                .orElse(0);
+        return ++currentMaxId;
     }
 }
