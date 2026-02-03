@@ -241,7 +241,7 @@ class FilmorateApplicationTests {
         user2.setName("A");
         user2.setBirthday(LocalDate.of(2001, 1, 1));
 
-        User user3= new User();
+        User user3 = new User();
         user3.setLogin("login");
         user3.setEmail("email@mail.ru");
         user3.setName("AB");
@@ -273,7 +273,7 @@ class FilmorateApplicationTests {
         user2.setName("A");
         user2.setBirthday(LocalDate.of(2001, 1, 1));
 
-        User user3= new User();
+        User user3 = new User();
         user3.setLogin("login");
         user3.setEmail("email@mail.ru");
         user3.setName("AB");
