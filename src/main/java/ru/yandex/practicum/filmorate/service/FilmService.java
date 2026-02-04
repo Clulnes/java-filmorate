@@ -18,6 +18,22 @@ public class FilmService {
     private final InMemoryFilmStorage inMemoryFilmStorage;
     private final InMemoryUserStorage inMemoryUserStorage;
 
+    public Collection<Film> findAll() {
+        return inMemoryFilmStorage.findAll();
+    }
+
+    public Film getById(Long id) {
+        return inMemoryFilmStorage.getById(id);
+    }
+
+    public Film create(Film film) {
+        return inMemoryFilmStorage.create(film);
+    }
+
+    public Film update(Film film) {
+        return inMemoryFilmStorage.update(film);
+    }
+
     public void addLike(Long filmId, Long userId) {
         Film film = inMemoryFilmStorage.getById(filmId);
 
