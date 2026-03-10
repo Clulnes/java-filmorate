@@ -29,7 +29,7 @@ public class Film {
 
     Set<Long> likes = new HashSet<>();
 
-    String genre;
+    Genre genre;
 
-    String rating;
+    Rating rating;
 }
