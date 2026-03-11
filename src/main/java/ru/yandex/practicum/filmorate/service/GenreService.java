@@ -11,6 +11,12 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public class GenreService {
     private final GenreDbStorage genreDbStorage;
-    public Collection<Genre> findAll() { return genreDbStorage.findAll(); }
-    public Genre getById(int id) { return genreDbStorage.getById(id); }
+
+    public Collection<Genre> findAll() {
+        return genreDbStorage.findAll();
+    }
+
+    public Genre getById(int id) {
+        return genreDbStorage.getById(id);
+    }
 }
