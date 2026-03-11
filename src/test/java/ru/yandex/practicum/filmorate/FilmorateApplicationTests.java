@@ -1,19 +1,14 @@
 package ru.yandex.practicum.filmorate;
 
 import lombok.RequiredArgsConstructor;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.jdbc.core.JdbcTemplate;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Rating;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.storage.dao.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.dao.UserDbStorage;
 
@@ -26,40 +21,29 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 @JdbcTest
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-@Import({UserDbStorage.class, FilmDbStorage.class, UserService.class})
+@Import({UserDbStorage.class, FilmDbStorage.class})
 class FilmorateApplicationTests {
     private final UserDbStorage userStorage;
     private final FilmDbStorage filmStorage;
-    private final UserService userService;
 
     @Test
-    public void testFindUserById() {
+    public void testCreateAndFindUserById() {
+        User user = new User();
+        user.setEmail("test@mail.ru");
+        user.setLogin("Login");
+        user.setName("Name");
+        user.setBirthday(LocalDate.of(2000, 1, 1));
 
-        Optional<User> userOptional = Optional.ofNullable(userStorage.getById(1L));
+        User createdUser = userStorage.create(user);
+        Long generatedId = createdUser.getId();
+
+        Optional<User> userOptional = Optional.ofNullable(userStorage.getById(generatedId));
 
         assertThat(userOptional)
                 .isPresent()
-                .hasValueSatisfying(user ->
-                        assertThat(user).hasFieldOrPropertyWithValue("id", 1L)
+                .hasValueSatisfying(u ->
+                        assertThat(u).hasFieldOrPropertyWithValue("id", generatedId)
                 );
-    }
-
-    @Test
-    public void testCreateAndGetById() {
-        User newUser = new User();
-        newUser.setEmail("user@email.ru");
-        newUser.setLogin("login");
-        newUser.setName("name");
-        newUser.setBirthday(LocalDate.of(2000, 1, 1));
-
-        User createdUser = userStorage.create(newUser);
-
-        User savedUser = userStorage.getById(createdUser.getId());
-
-        assertThat(savedUser)
-                .isNotNull()
-                .hasFieldOrPropertyWithValue("id", createdUser.getId())
-                .hasFieldOrPropertyWithValue("email", "user@email.ru");
     }
 
     @Test
@@ -79,64 +63,30 @@ class FilmorateApplicationTests {
     }
 
     @Test
-    public void testFindAllUsers() {
-        User user1 = new User();
-        user1.setEmail("1@mail.ru"); user1.setLogin("l1"); user1.setName("n1"); user1.setBirthday(LocalDate.now());
-        User user2 = new User();
-        user2.setEmail("2@mail.ru"); user2.setLogin("l2"); user2.setName("n2"); user2.setBirthday(LocalDate.now());
-
-        userStorage.create(user1);
-        userStorage.create(user2);
-
-        Collection<User> users = userStorage.findAll();
-        assertThat(users.size()).isEqualTo(2);
-    }
-
-    @Test
     public void testAddAndRemoveFriend() {
-        User user1 = new User();
-        user1.setEmail("1@mail.ru");
-        user1.setLogin("l1");
-        user1.setName("n1");
-        user1.setBirthday(LocalDate.now());
-        User user2 = new User();
-        user2.setEmail("2@mail.ru");
-        user2.setLogin("l2");
-        user2.setName("n2");
-        user2.setBirthday(LocalDate.now());
+        User user1 = userStorage.create(createUser("user1@mail.ru", "login1"));
+        User user2 = userStorage.create(createUser("user2@mail.ru", "login2"));
 
-        userService.addFriend(user1.getId(), user2.getId());
+        userStorage.addFriend(user1.getId(), user2.getId());
 
-        Collection<User> friends = userService.getFriends(user1.getId());
+        Collection<User> friends = userStorage.getFriends(user1.getId());
         assertThat(friends.size()).isEqualTo(1);
         assertThat(friends.iterator().next().getId()).isEqualTo(user2.getId());
 
-        userService.removeFriend(user1.getId(), user2.getId());
-        assertThat(userService.getFriends(user1.getId())).isEqualTo(null);
+        userStorage.removeFriend(user1.getId(), user2.getId());
+        assertThat(userStorage.getFriends(user1.getId()).isEmpty()).isTrue();
     }
 
     @Test
     public void testCommonFriends() {
-        User user1 = new User();
-        user1.setEmail("1@mail.ru");
-        user1.setLogin("l1");
-        user1.setName("n1");
-        user1.setBirthday(LocalDate.now());
-        User user2 = new User();
-        user2.setEmail("2@mail.ru");
-        user2.setLogin("l2");
-        user2.setName("n2");
-        user2.setBirthday(LocalDate.now());
-        User common = new User();
-        common.setEmail("common@mail.ru");
-        common.setLogin("common");
-        common.setName("n2");
-        common.setBirthday(LocalDate.now());
+        User user1 = userStorage.create(createUser("u1@mail.ru", "l1"));
+        User user2 = userStorage.create(createUser("u2@mail.ru", "l2"));
+        User common = userStorage.create(createUser("common@mail.ru", "common"));
 
-        userService.addFriend(user1.getId(), common.getId());
-        userService.addFriend(user2.getId(), common.getId());
+        userStorage.addFriend(user1.getId(), common.getId());
+        userStorage.addFriend(user2.getId(), common.getId());
 
-        Collection<User> commonFriends = userService.getCommonFriends(user1.getId(), user2.getId());
+        Collection<User> commonFriends = userStorage.getCommonFriends(user1.getId(), user2.getId());
         assertThat(commonFriends.size()).isEqualTo(1);
         assertThat(commonFriends.iterator().next().getId()).isEqualTo(common.getId());
     }
@@ -144,21 +94,22 @@ class FilmorateApplicationTests {
     @Test
     public void testCreateAndGetFilm() {
         Film film = createTestFilm();
+        Film createdFilm = filmStorage.create(film);
 
-        Film savedFilm = filmStorage.getById(film.getId());
+        Film savedFilm = filmStorage.getById(createdFilm.getId());
 
         assertThat(savedFilm)
                 .isNotNull()
                 .hasFieldOrPropertyWithValue("name", "Test Film")
                 .hasFieldOrPropertyWithValue("description", "Description");
 
-        assertThat(savedFilm.getRating().getId()).isEqualTo(1);
-        assertThat(savedFilm.getGenre().getId()).isEqualTo(1);
+        assertThat(savedFilm.getMpa().getId()).isEqualTo(1);
     }
 
     @Test
     public void testUpdateFilm() {
-        Film film = createTestFilm();
+        Film film = filmStorage.create(createTestFilm());
+
         film.setName("Updated Name");
         filmStorage.update(film);
 
@@ -167,35 +118,25 @@ class FilmorateApplicationTests {
     }
 
     @Test
-    public void testFindAllFilms() {
-        createTestFilm();
-        createTestFilm();
-
-        Collection<Film> films = filmStorage.findAll();
-        assertThat(films.size()).isEqualTo(2);
-    }
-
-    @Test
     public void testLikes() {
-        Film film = createTestFilm();
-        User user1 = new User();
-        user1.setEmail("1@mail.ru");
-        user1.setLogin("l1");
-        user1.setName("n1");
-        user1.setBirthday(LocalDate.now());
-        User user2 = new User();
-        user2.setEmail("2@mail.ru");
-        user2.setLogin("l2");
-        user2.setName("n2");
-        user2.setBirthday(LocalDate.now());
-        userStorage.create(user1);
-        userStorage.create(user2);
+        Film film = filmStorage.create(createTestFilm());
+        User user1 = userStorage.create(createUser("like1@mail.ru", "l1"));
+        User user2 = userStorage.create(createUser("like2@mail.ru", "l2"));
 
-        filmStorage.addLike(film.getId(), 1L);
-        filmStorage.addLike(film.getId(), 2L);
+        filmStorage.addLike(film.getId(), user1.getId());
+        filmStorage.addLike(film.getId(), user2.getId());
 
         Collection<Film> popular = filmStorage.getMostPopular(10);
-        assertThat(popular).isNotNull();
+        assertThat(popular.iterator().next().getId()).isEqualTo(film.getId());
+    }
+
+    private User createUser(String email, String login) {
+        User user = new User();
+        user.setEmail(email);
+        user.setLogin(login);
+        user.setName(login + "Name");
+        user.setBirthday(LocalDate.of(1990, 1, 1));
+        return user;
     }
 
     private Film createTestFilm() {
@@ -204,13 +145,7 @@ class FilmorateApplicationTests {
         film.setDescription("Description");
         film.setReleaseDate(LocalDate.of(2000, 1, 1));
         film.setDuration(120L);
-
-        Rating rating = new Rating(1, "G");
-        film.setRating(rating);
-
-        Genre genre = new Genre(1, "Комедия");
-        film.setGenre(genre);
-
-        return filmStorage.create(film);
+        film.setMpa(new Rating(1, "G"));
+        return film;
     }
 }

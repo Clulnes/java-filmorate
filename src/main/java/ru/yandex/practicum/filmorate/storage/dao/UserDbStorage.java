@@ -74,9 +74,9 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public void addFriend(Long userId, Long friendId) {
-        String sql = "INSERT INTO friendship (user_id, friend_id, ready_to_be_friends) VALUES (?, ?)";
+        String sql = "INSERT INTO friendship (user_id, friend_id) VALUES (?, ?)";
 
-        jdbcTemplate.update(sql, userId, friendId, false);
+        jdbcTemplate.update(sql, userId, friendId);
     }
 
     @Override
@@ -90,7 +90,7 @@ public class UserDbStorage implements UserStorage {
     public Collection<User> getFriends(Long userId) {
         String sql = "SELECT u.* FROM users as u " +
                 "JOIN friendship as f ON u.id = f.friend_id " +
-                "WHERE f.user_id = ? AND f.ready_to_be_friends = true";
+                "WHERE f.user_id = ?";
         return jdbcTemplate.query(sql, this::mapRowToUser, userId);
     }
 
@@ -99,8 +99,7 @@ public class UserDbStorage implements UserStorage {
         String sql = "SELECT u.* FROM users as u " +
                 "JOIN friendship as f1 ON u.id = f1.friend_id " +
                 "JOIN friendship as f2 ON u.id = f2.friend_id " +
-                "WHERE f1.user_id = ? AND f2.user_id = ? AND f1.ready_to_be_friends = true " +
-                "AND f2.ready_to_be_friends = true";
+                "WHERE f1.user_id = ? AND f2.user_id = ?";
         return jdbcTemplate.query(sql, this::mapRowToUser, userId, friendId);
     }
 

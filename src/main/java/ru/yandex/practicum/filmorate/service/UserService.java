@@ -42,6 +42,9 @@ public class UserService {
     }
 
     public void removeFriend(Long userId, Long friendId) {
+        userStorage.getById(userId);
+        userStorage.getById(friendId);
+
         userStorage.removeFriend(userId, friendId);
         log.info("Пользователь {} удалил пользователя {}", userId, friendId);
     }
