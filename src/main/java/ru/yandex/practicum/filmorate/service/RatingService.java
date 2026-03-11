@@ -11,6 +11,12 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public class RatingService {
     private final RatingDbStorage ratingDbStorage;
-    public Collection<Rating> findAll() { return ratingDbStorage.findAll(); }
-    public Rating getById(int id) { return ratingDbStorage.getById(id); }
+
+    public Collection<Rating> findAll() {
+        return ratingDbStorage.findAll();
+    }
+
+    public Rating getById(int id) {
+        return ratingDbStorage.getById(id);
+    }
 }
