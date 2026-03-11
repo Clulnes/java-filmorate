@@ -17,8 +17,12 @@ public class GenreController {
     private final GenreService genreService;
 
     @GetMapping
-    public Collection<Genre> findAll() { return genreService.findAll(); }
+    public Collection<Genre> findAll() {
+        return genreService.findAll();
+    }
 
     @GetMapping("/{id}")
-    public Genre getById(@PathVariable int id) { return genreService.getById(id); }
+    public Genre getById(@PathVariable int id) {
+        return genreService.getById(id);
+    }
 }
