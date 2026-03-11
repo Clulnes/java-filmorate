@@ -17,8 +17,12 @@ public class RatingController {
     private final RatingService ratingService;
 
     @GetMapping
-    public Collection<Rating> findAll() { return ratingService.findAll(); }
+    public Collection<Rating> findAll() {
+        return ratingService.findAll();
+    }
 
     @GetMapping("/{id}")
-    public Rating getById(@PathVariable int id) { return ratingService.getById(id); }
+    public Rating getById(@PathVariable int id) {
+        return ratingService.getById(id);
+    }
 }
