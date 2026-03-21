@@ -1,78 +1,62 @@
 package ru.yandex.practicum.filmorate.service;
 
-import exception.NotFoundException;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Collection;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
 public class UserService {
-    private final InMemoryUserStorage inMemoryUserStorage;
+    private final UserStorage userStorage;
+
+    public UserService(@Qualifier("userDbStorage") UserStorage userStorage) {
+        this.userStorage = userStorage;
+    }
 
     public Collection<User> findAll() {
-        return inMemoryUserStorage.findAll();
+        return userStorage.findAll();
     }
 
     public User create(User user) {
-        return inMemoryUserStorage.create(user);
+        return userStorage.create(user);
     }
 
     public User update(User user) {
-        return inMemoryUserStorage.update(user);
+        return userStorage.update(user);
     }
 
     public User getById(Long id) {
-        return inMemoryUserStorage.getById(id);
+        return userStorage.getById(id);
     }
 
     public void addFriend(Long userId, Long friendId) {
-        User user = inMemoryUserStorage.getById(userId);
-        User friend = inMemoryUserStorage.getById(friendId);
-
-        user.getFriends().add(friendId);
-        friend.getFriends().add(userId);
+        userStorage.getById(userId);
+        userStorage.getById(friendId);
+        userStorage.addFriend(userId, friendId);
 
         log.info("Пользователь с ID {} добавил в друзья пользователя {}", userId, friendId);
     }
 
     public void removeFriend(Long userId, Long friendId) {
-        User user = inMemoryUserStorage.getById(userId);
-        User friend = inMemoryUserStorage.getById(friendId);
+        userStorage.getById(userId);
+        userStorage.getById(friendId);
 
-        if (user == null || friend == null) {
-            throw new NotFoundException("Пользователь не найден");
-        }
-
-        user.getFriends().remove(friendId);
-        friend.getFriends().remove(userId);
+        userStorage.removeFriend(userId, friendId);
+        log.info("Пользователь {} удалил пользователя {}", userId, friendId);
     }
 
     public Collection<User> getCommonFriends(Long userId, Long friendId) {
-        User user = inMemoryUserStorage.getById(userId);
-        User friend = inMemoryUserStorage.getById(friendId);
-
-        if (user == null || friend == null) {
-            throw new NotFoundException("Пользователь не найден");
-        }
-
-        return user.getFriends().stream()
-                .filter(id -> friend.getFriends().contains(id))
-                .map(inMemoryUserStorage::getById)
-                .collect(Collectors.toList());
+        userStorage.getById(userId);
+        userStorage.getById(friendId);
+        return userStorage.getCommonFriends(userId, friendId);
     }
 
     public Collection<User> getFriends(Long userId) {
-        User user = inMemoryUserStorage.getById(userId);
-
-        return user.getFriends().stream()
-                .map(inMemoryUserStorage::getById)
-                .collect(Collectors.toList());
+        userStorage.getById(userId);
+        return userStorage.getFriends(userId);
     }
 }
